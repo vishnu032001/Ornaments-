@@ -60,6 +60,9 @@ export function calculateCheckoutPricing(items: RequestedItem[], address: Shippi
 
   const taxableAmount = subtotal + shipping;
   const tax = Math.round((taxableAmount * GST_RATE_BPS) / 10000);
+  const taxBreakdown = address.state === "KA"
+    ? { cgst: Math.round(tax / 2), sgst: tax - Math.round(tax / 2), igst: 0 }
+    : { cgst: 0, sgst: 0, igst: tax };
   return {
     lineItems,
     subtotal,
@@ -69,6 +72,8 @@ export function calculateCheckoutPricing(items: RequestedItem[], address: Shippi
     total: subtotal + shipping + tax,
     taxRateBps: GST_RATE_BPS,
     taxName: "GST",
+    taxJurisdiction: address.state,
+    taxBreakdown,
     shippingZone: zone.name,
     shippingRule: subtotal >= FREE_SHIPPING_THRESHOLD ? "free-over-threshold" : "weight-and-zone",
   };
