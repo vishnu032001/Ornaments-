@@ -1,0 +1,3 @@
+export type Category="Necklaces"|"Earrings"|"Bangles"|"Rings"|"Bracelets"|"Accessories";
+export type Material="Gold-plated"|"Silver"|"Pearl"|"Beaded";
+export interface Product{id:string;slug:string;name:string;category:Category;material:Material;price:number;compareAtPrice?:number;rating:number;popularity:number;badge?:"Best Seller"|"New"|"Limited";description:string;images:string[];specifications:{material:string;finish:string;size:string;care:string}}
