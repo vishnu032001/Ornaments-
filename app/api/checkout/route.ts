@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { getCurrentUser, normalizeEmail } from "@/lib/auth";
 import { findOrCreateOrder, InventoryUnavailableError } from "@/lib/order";
 import { validateShippingAddress } from "@/lib/checkout-pricing";
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     });
 
     if (result.order.stripeCheckoutSessionId) {
-      const existingSession = await stripe.checkout.sessions.retrieve(result.order.stripeCheckoutSessionId);
+      const existingSession = await getStripe().checkout.sessions.retrieve(result.order.stripeCheckoutSessionId);
       if (existingSession.url) return NextResponse.json({ orderId: result.order.id, url: existingSession.url });
     }
 
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL;
     if (!baseUrl) throw new Error("APP_URL is required.");
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       mode: "payment",
       customer_email: email,
       client_reference_id: result.order.id,
