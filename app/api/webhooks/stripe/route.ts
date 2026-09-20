@@ -4,6 +4,40 @@ import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { sendOrderConfirmationEmail } from "@/lib/email";
 
+async function commitInventory(tx: any, orderId: string) {
+  const reservations = await tx.inventoryReservation.findMany({ where: { orderId, status: "ACTIVE" } });
+  for (const reservation of reservations) {
+    const changed = await tx.inventoryItem.updateMany({
+      where: {
+        productId: reservation.productId,
+        reservedStock: { gte: reservation.quantity },
+        onHandStock: { gte: reservation.quantity },
+      },
+      data: {
+        onHandStock: { decrement: reservation.quantity },
+        reservedStock: { decrement: reservation.quantity },
+      },
+    });
+    if (changed.count !== 1) throw new Error("Inventory reservation could not be committed.");
+    await tx.inventoryReservation.update({ where: { id: reservation.id }, data: { status: "COMMITTED" } });
+  }
+}
+
+async function releaseInventory(tx: any, orderId: string) {
+  const reservations = await tx.inventoryReservation.findMany({ where: { orderId, status: "ACTIVE" } });
+  for (const reservation of reservations) {
+    const changed = await tx.inventoryItem.updateMany({
+      where: { productId: reservation.productId, reservedStock: { gte: reservation.quantity } },
+      data: { reservedStock: { decrement: reservation.quantity } },
+    });
+    if (changed.count !== 1) throw new Error("Inventory reservation could not be released.");
+    await tx.inventoryReservation.update({
+      where: { id: reservation.id },
+      data: { status: "RELEASED", releasedAt: new Date() },
+    });
+  }
+}
+
 export const runtime = "nodejs";
 
 async function markPaid(session: Stripe.Checkout.Session, event: Stripe.Event) {
@@ -22,6 +56,7 @@ async function markPaid(session: Stripe.Checkout.Session, event: Stripe.Event) {
       where: { id: orderId, paymentStatus: "PENDING", status: "PENDING" },
       data: { paymentStatus: "PAID", status: "PAID", paidAt: new Date(), stripePaymentIntentId: paymentIntent },
     });
+    if (result.count === 1) await commitInventory(tx, orderId);
     return result.count === 1;
   });
   if (!updated) return;
@@ -54,7 +89,11 @@ async function recordFailed(session: Stripe.Checkout.Session, event: Stripe.Even
       if ((error as { code?: string }).code === "P2002") return;
       throw error;
     }
-    await tx.order.updateMany({ where: { id: orderId, paymentStatus: "PENDING", status: "PENDING" }, data: { paymentStatus: "FAILED" } });
+    const result = await tx.order.updateMany({
+      where: { id: orderId, paymentStatus: "PENDING", status: "PENDING" },
+      data: { paymentStatus: "FAILED" },
+    });
+    if (result.count === 1) await releaseInventory(tx, orderId);
   });
 }
 
@@ -77,6 +116,9 @@ export async function POST(request: Request) {
         await markPaid(event.data.object as Stripe.Checkout.Session, event);
         break;
       case "checkout.session.async_payment_failed":
+        await recordFailed(event.data.object as Stripe.Checkout.Session, event);
+        break;
+      case "checkout.session.expired":
         await recordFailed(event.data.object as Stripe.Checkout.Session, event);
         break;
       default:
