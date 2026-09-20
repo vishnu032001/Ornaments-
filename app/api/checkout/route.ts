@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       success_url: `${baseUrl}/checkout/success?order_id=${encodeURIComponent(result.order.id)}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/checkout?cancelled=1`,
       expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
-    });
+    }, { idempotencyKey: parsed.data.checkoutRequestId });
 
     await prisma.order.update({ where: { id: result.order.id }, data: { stripeCheckoutSessionId: session.id } });
     return NextResponse.json({ orderId: result.order.id, url: session.url });
