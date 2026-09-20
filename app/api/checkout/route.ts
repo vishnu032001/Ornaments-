@@ -43,7 +43,39 @@ export async function POST(request: Request) {
       if (existingSession.url) return NextResponse.json({ orderId: result.order.id, url: existingSession.url });
     }
 
-    if (!result.pricing) throw new Error("Unable to recover checkout pricing.");
+    if (!result.pricing) {
+      if (result.order.paymentStatus !== "PENDING" || result.order.status !== "PENDING") {
+        return NextResponse.json({ error: "This checkout can no longer be resumed. Please start checkout again." }, { status: 409 });
+      }
+      const snapshot = await prisma.order.findUnique({
+        where: { id: result.order.id },
+        include: { items: true },
+      });
+      if (!snapshot) throw new Error("Unable to recover checkout order.");
+
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL;
+      if (!baseUrl) throw new Error("APP_URL is required.");
+      const session = await getStripe().checkout.sessions.create({
+        mode: "payment",
+        customer_email: email,
+        client_reference_id: snapshot.id,
+        metadata: { orderId: snapshot.id, shippingZone: snapshot.shippingZone ?? "Unknown", taxRateBps: String(snapshot.taxRateBps ?? 0) },
+        shipping_address_collection: { allowed_countries: ["IN"] },
+        line_items: [
+          ...snapshot.items.map((item) => ({
+            price_data: { currency: "inr", product_data: { name: item.name }, unit_amount: item.unitPrice * 100 },
+            quantity: item.quantity,
+          })),
+          ...(snapshot.shippingAmount ? [{ price_data: { currency: "inr", product_data: { name: `Shipping · ${snapshot.shippingZone ?? "Standard"}` }, unit_amount: snapshot.shippingAmount * 100 }, quantity: 1 }] : []),
+          ...(snapshot.taxAmount ? [{ price_data: { currency: "inr", product_data: { name: `GST · ${((snapshot.taxRateBps ?? 0) / 100).toFixed(2)}%` }, unit_amount: snapshot.taxAmount * 100 }, quantity: 1 }] : []),
+        ],
+        success_url: `${baseUrl}/checkout/success?order_id=${encodeURIComponent(snapshot.id)}&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${baseUrl}/checkout?cancelled=1`,
+        expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
+      }, { idempotencyKey: parsed.data.checkoutRequestId });
+      await prisma.order.update({ where: { id: snapshot.id }, data: { stripeCheckoutSessionId: session.id } });
+      return NextResponse.json({ orderId: snapshot.id, url: session.url });
+    }
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL;
     if (!baseUrl) throw new Error("APP_URL is required.");
 
