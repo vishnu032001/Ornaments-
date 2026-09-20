@@ -1,0 +1,62 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { stripe } from "@/lib/stripe";
+import { getCurrentUser, normalizeEmail } from "@/lib/auth";
+import { findOrCreateOrder } from "@/lib/order";
+import { prisma } from "@/lib/prisma";
+
+const schema = z.object({
+  email: z.string().email().max(320),
+  checkoutRequestId: z.string().uuid(),
+  items: z.array(z.object({ productId: z.string().min(1), quantity: z.number().int().min(1).max(20) })).min(1).max(50),
+});
+
+export async function POST(request: Request) {
+  try {
+    const parsed = schema.safeParse(await request.json());
+    if (!parsed.success) return NextResponse.json({ error: "Invalid checkout request." }, { status: 400 });
+
+    const user = await getCurrentUser();
+    const email = normalizeEmail(parsed.data.email);
+    const result = await findOrCreateOrder({
+      checkoutRequestId: parsed.data.checkoutRequestId, email, userId: user?.id, items: parsed.data.items,
+    });
+
+    if (result.order.stripeCheckoutSessionId) {
+      const existingSession = await stripe.checkout.sessions.retrieve(result.order.stripeCheckoutSessionId);
+      if (existingSession.url) return NextResponse.json({ orderId: result.order.id, url: existingSession.url });
+    }
+
+    if (!result.pricing) throw new Error("Unable to recover checkout pricing.");
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL;
+    if (!baseUrl) throw new Error("APP_URL is required.");
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      customer_email: email,
+      client_reference_id: result.order.id,
+      metadata: { orderId: result.order.id },
+      line_items: [
+        ...result.pricing.lineItems.map(({ product, quantity }) => ({
+          price_data: {
+            currency: "inr",
+            product_data: { name: product.name, description: product.material },
+            unit_amount: product.price * 100,
+          },
+          quantity,
+        })),
+        ...(result.pricing.shipping ? [{ price_data: { currency: "inr", product_data: { name: "Shipping" }, unit_amount: result.pricing.shipping * 100 }, quantity: 1 }] : []),
+        ...(result.pricing.tax ? [{ price_data: { currency: "inr", product_data: { name: "Tax" }, unit_amount: result.pricing.tax * 100 }, quantity: 1 }] : []),
+      ],
+      success_url: `${baseUrl}/checkout/success?order_id=${encodeURIComponent(result.order.id)}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/checkout?cancelled=1`,
+      expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
+    });
+
+    await prisma.order.update({ where: { id: result.order.id }, data: { stripeCheckoutSessionId: session.id } });
+    return NextResponse.json({ orderId: result.order.id, url: session.url });
+  } catch (error) {
+    console.error("create-checkout-session", error);
+    return NextResponse.json({ error: "Unable to start payment." }, { status: 500 });
+  }
+}
