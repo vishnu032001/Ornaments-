@@ -106,3 +106,33 @@ model StripeWebhookEvent {
   type       String
   receivedAt DateTime @default(now())
 }
+
+enum InventoryReservationStatus {
+  ACTIVE
+  COMMITTED
+  RELEASED
+}
+
+model InventoryItem {
+  productId      String   @id
+  onHandStock    Int      @default(0)
+  reservedStock  Int      @default(0)
+  updatedAt      DateTime @updatedAt
+  reservations   InventoryReservation[]
+}
+
+model InventoryReservation {
+  id          String                      @id @default(cuid())
+  orderId     String
+  productId   String
+  quantity    Int
+  status      InventoryReservationStatus @default(ACTIVE)
+  createdAt   DateTime                    @default(now())
+  releasedAt  DateTime?
+  order       Order                       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  inventory   InventoryItem               @relation(fields: [productId], references: [productId])
+
+  @@unique([orderId, productId])
+  @@index([productId, status])
+  @@index([orderId, status])
+}
