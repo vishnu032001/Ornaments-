@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useStore } from "@/lib/store";
 
-export default function CheckoutSuccessPage() {
+function SuccessContent() {
   const params = useSearchParams();
   const orderId = params.get("order_id");
   const clearCart = useStore((state) => state.clearCart);
@@ -22,4 +22,8 @@ export default function CheckoutSuccessPage() {
       <Link href="/shop" className="rounded-full bg-charcoal px-7 py-3 text-white">Continue shopping</Link>
     </div>
   </section>;
+}
+
+export default function CheckoutSuccessPage() {
+  return <Suspense fallback={<section className="mx-auto max-w-2xl px-6 py-24 text-center"><p className="text-stone-500">Confirming your payment…</p></section>}><SuccessContent /></Suspense>;
 }
