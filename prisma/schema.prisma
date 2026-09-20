@@ -68,21 +68,22 @@ model AuthRateLimit {
 }
 
 model Order {
-  id                     String        @id @default(cuid())
-  userId                 String?
-  guestEmail             String?
-  status                 OrderStatus   @default(PENDING)
-  paymentStatus          PaymentStatus @default(PENDING)
-  total                  Int
-  checkoutRequestId      String        @unique
+  id                      String        @id @default(cuid())
+  userId                  String?
+  guestEmail              String?
+  status                  OrderStatus   @default(PENDING)
+  paymentStatus           PaymentStatus @default(PENDING)
+  total                   Int
+  checkoutRequestId       String        @unique
   stripeCheckoutSessionId String?       @unique
-  stripePaymentIntentId  String?       @unique
-  paidAt                 DateTime?
-  confirmationSentAt     DateTime?
-  createdAt              DateTime      @default(now())
-  updatedAt              DateTime      @updatedAt
-  user                   User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
-  items                  OrderItem[]
+  stripePaymentIntentId   String?       @unique
+  paidAt                  DateTime?
+  confirmationSentAt      DateTime?
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+  user                    User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items                   OrderItem[]
+  inventoryReservations   InventoryReservation[]
 
   @@index([userId, createdAt])
   @@index([guestEmail, createdAt])
