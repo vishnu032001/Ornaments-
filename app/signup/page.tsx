@@ -1,2 +1,9 @@
 import SignupForm from "@/components/auth/SignupForm";
-export default function SignupPage(){return <section className="mx-auto max-w-md px-6 py-20"><h1 className="font-serif text-5xl">Create account</h1><p className="mt-3 text-stone-500">Save your details and keep every order together.</p><SignupForm/></section>
+
+export default function SignupPage(){
+  return <section className="mx-auto max-w-md px-6 py-20">
+    <h1 className="font-serif text-5xl">Create account</h1>
+    <p className="mt-3 text-stone-500">Save your details and keep every order together.</p>
+    <SignupForm/>
+  </section>;
+}
