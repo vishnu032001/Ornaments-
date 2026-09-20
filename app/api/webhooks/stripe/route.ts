@@ -45,6 +45,8 @@ async function markPaid(session: Stripe.Checkout.Session, event: Stripe.Event) {
   if (!orderId || session.payment_status !== "paid") return;
 
   const paymentIntent = typeof session.payment_intent === "string" ? session.payment_intent : null;
+  const expectedAmount = session.amount_total;
+  if (expectedAmount === null || expectedAmount === undefined) return;
   const updated = await prisma.$transaction(async (tx) => {
     try {
       await tx.stripeWebhookEvent.create({ data: { id: event.id, type: event.type } });
@@ -52,6 +54,11 @@ async function markPaid(session: Stripe.Checkout.Session, event: Stripe.Event) {
       if ((error as { code?: string }).code === "P2002") return null;
       throw error;
     }
+    const order = await tx.order.findUnique({ where: { id: orderId }, select: { total: true } });
+    if (!order || expectedAmount !== order.total * 100) {
+      throw new Error("Stripe amount does not match the server order total.");
+    }
+
     const result = await tx.order.updateMany({
       where: { id: orderId, paymentStatus: "PENDING", status: "PENDING" },
       data: { paymentStatus: "PAID", status: "PAID", paidAt: new Date(), stripePaymentIntentId: paymentIntent },
