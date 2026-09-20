@@ -1,16 +1,19 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useStore } from "@/lib/store";
+import { trackPurchase } from "@/lib/analytics";
 
 function SuccessContent() {
   const params = useSearchParams();
   const orderId = params.get("order_id");
+  const [tracked, setTracked] = useState(false);
   const clearCart = useStore((state) => state.clearCart);
 
   useEffect(() => { clearCart(); }, [clearCart]);
+  useEffect(() => { if (!orderId || tracked) return; fetch(`/api/orders/${encodeURIComponent(orderId)}`).then(async r => r.ok ? r.json() : null).then(order => { if (!order) return; trackPurchase(order.id, order.items ?? [], order.total); setTracked(true); }).catch(() => undefined); }, [orderId, tracked]);
 
   return <section className="mx-auto max-w-2xl px-6 py-24 text-center">
     <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-sand text-2xl">✓</div>
