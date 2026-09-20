@@ -1,0 +1,219 @@
+[
+  {
+    "id": "p1",
+    "slug": "celeste-pearl-choker",
+    "name": "Celeste Pearl Choker",
+    "category": "Necklaces",
+    "material": "Pearl",
+    "price": 1899,
+    "compareAtPrice": 2299,
+    "rating": 4.9,
+    "popularity": 98,
+    "badge": "Best Seller",
+    "description": "A luminous pearl choker designed for bridal styling and graceful evening looks.",
+    "images": [
+      "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=85",
+      "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=900&q=85"
+    ],
+    "specifications": {
+      "material": "Faux pearl and alloy",
+      "finish": "Polished",
+      "size": "Adjustable 34–40 cm",
+      "care": "Keep dry and store separately"
+    }
+  },
+  {
+    "id": "p2",
+    "slug": "meera-temple-drop-earrings",
+    "name": "Meera Temple Drop Earrings",
+    "category": "Earrings",
+    "material": "Gold-plated",
+    "price": 1499,
+    "rating": 4.8,
+    "popularity": 94,
+    "badge": "New",
+    "description": "Ornate temple-inspired drops with a warm antique-gold finish.",
+    "images": [
+      "https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&w=900&q=85",
+      "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=900&q=85"
+    ],
+    "specifications": {
+      "material": "Alloy",
+      "finish": "18K-look gold plated",
+      "size": "6.2 cm drop",
+      "care": "Avoid perfume and moisture"
+    }
+  },
+  {
+    "id": "p3",
+    "slug": "rose-vine-bangle-stack",
+    "name": "Rose Vine Bangle Stack",
+    "category": "Bangles",
+    "material": "Gold-plated",
+    "price": 2199,
+    "compareAtPrice": 2599,
+    "rating": 4.7,
+    "popularity": 91,
+    "badge": "Best Seller",
+    "description": "A coordinated stack of delicate vine-textured bangles.",
+    "images": [
+      "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=900&q=85",
+      "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=900&q=85"
+    ],
+    "specifications": {
+      "material": "Alloy",
+      "finish": "Rose-gold plated",
+      "size": "2.4/2.6",
+      "care": "Wipe gently after wear"
+    }
+  },
+  {
+    "id": "p4",
+    "slug": "noor-sculpted-ring",
+    "name": "Noor Sculpted Ring",
+    "category": "Rings",
+    "material": "Silver",
+    "price": 899,
+    "rating": 4.6,
+    "popularity": 86,
+    "badge": "New",
+    "description": "A clean sculptural ring for minimal everyday styling.",
+    "images": [
+      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=85",
+      "https://images.unsplash.com/photo-1627293509201-cd6c0e0c0d8a?auto=format&fit=crop&w=900&q=85"
+    ],
+    "specifications": {
+      "material": "Stainless alloy",
+      "finish": "Silver-tone",
+      "size": "Adjustable",
+      "care": "Store away from humidity"
+    }
+  },
+  {
+    "id": "p5",
+    "slug": "siena-beaded-bracelet",
+    "name": "Siena Beaded Bracelet",
+    "category": "Bracelets",
+    "material": "Beaded",
+    "price": 799,
+    "rating": 4.5,
+    "popularity": 79,
+    "description": "Soft neutral beads and a refined charm for easy layering.",
+    "images": [
+      "https://images.unsplash.com/photo-1619119069152-a2b331eb392a?auto=format&fit=crop&w=900&q=85",
+      "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=900&q=85"
+    ],
+    "specifications": {
+      "material": "Glass beads and alloy",
+      "finish": "Satin",
+      "size": "Adjustable",
+      "care": "Avoid water"
+    }
+  },
+  {
+    "id": "p6",
+    "slug": "tara-crystal-collar",
+    "name": "Tara Crystal Collar",
+    "category": "Necklaces",
+    "material": "Silver",
+    "price": 2799,
+    "rating": 4.9,
+    "popularity": 96,
+    "badge": "Limited",
+    "description": "A statement crystal collar with a cool silver silhouette.",
+    "images": [
+      "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&w=900&q=85",
+      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=900&q=85"
+    ],
+    "specifications": {
+      "material": "Alloy and crystals",
+      "finish": "Rhodium-look",
+      "size": "36–42 cm",
+      "care": "Store in pouch"
+    }
+  },
+  {
+    "id": "p7",
+    "slug": "anaya-pearl-studs",
+    "name": "Anaya Pearl Studs",
+    "category": "Earrings",
+    "material": "Pearl",
+    "price": 999,
+    "rating": 4.8,
+    "popularity": 88,
+    "description": "Classic pearl studs with a modern, polished setting.",
+    "images": [
+      "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=900&q=85",
+      "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=900&q=85"
+    ],
+    "specifications": {
+      "material": "Faux pearl and alloy",
+      "finish": "Polished",
+      "size": "1.4 cm",
+      "care": "Avoid cosmetics"
+    }
+  },
+  {
+    "id": "p8",
+    "slug": "ira-gold-cuff",
+    "name": "Ira Gold Cuff",
+    "category": "Bracelets",
+    "material": "Gold-plated",
+    "price": 1599,
+    "rating": 4.7,
+    "popularity": 83,
+    "description": "A smooth open cuff with a subtle high-shine finish.",
+    "images": [
+      "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=900&q=85",
+      "https://images.unsplash.com/photo-1619119069152-a2b331eb392a?auto=format&fit=crop&w=900&q=85"
+    ],
+    "specifications": {
+      "material": "Alloy",
+      "finish": "Gold plated",
+      "size": "Open adjustable",
+      "care": "Keep dry"
+    }
+  },
+  {
+    "id": "p9",
+    "slug": "zoya-pearl-ring",
+    "name": "Zoya Pearl Ring",
+    "category": "Rings",
+    "material": "Pearl",
+    "price": 1199,
+    "rating": 4.6,
+    "popularity": 76,
+    "description": "A petite pearl accent ring that pairs beautifully with stacks.",
+    "images": [
+      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=85",
+      "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=85"
+    ],
+    "specifications": {
+      "material": "Faux pearl and alloy",
+      "finish": "Polished",
+      "size": "Adjustable",
+      "care": "Keep dry"
+    }
+  },
+  {
+    "id": "p10",
+    "slug": "kaira-beaded-necklace",
+    "name": "Kaira Beaded Necklace",
+    "category": "Necklaces",
+    "material": "Beaded",
+    "price": 1699,
+    "rating": 4.5,
+    "popularity": 81,
+    "description": "A softly layered beaded necklace for contemporary festive outfits.",
+    "images": [
+      "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&w=900&q=85",
+      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=900&q=85"
+    ],
+    "specifications": {
+      "material": "Glass beads",
+      "finish": "Satin",
+      "size": "42–48 cm",
+      "care": "Avoid water"
+    }
+  }
+]
