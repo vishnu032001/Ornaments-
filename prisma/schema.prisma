@@ -74,6 +74,21 @@ model Order {
   status                  OrderStatus   @default(PENDING)
   paymentStatus           PaymentStatus @default(PENDING)
   total                   Int
+  subtotal                Int?
+  shippingAmount          Int?
+  taxAmount               Int?
+  taxRateBps              Int?
+  taxName                 String?
+  taxJurisdiction         String?
+  taxBreakdown            Json?
+  shippingZone            String?
+  shippingRule            String?
+  shippingName            String?
+  shippingLine1           String?
+  shippingCity            String?
+  shippingState           String?
+  shippingPostalCode      String?
+  shippingCountry         String?
   checkoutRequestId       String        @unique
   stripeCheckoutSessionId String?       @unique
   stripePaymentIntentId   String?       @unique
