@@ -20,7 +20,8 @@
       "finish": "Polished",
       "size": "Adjustable 34–40 cm",
       "care": "Keep dry and store separately"
-    }
+    },
+    "shippingWeightGrams": 180
   },
   {
     "id": "p2",
@@ -42,7 +43,8 @@
       "finish": "18K-look gold plated",
       "size": "6.2 cm drop",
       "care": "Avoid perfume and moisture"
-    }
+    },
+    "shippingWeightGrams": 90
   },
   {
     "id": "p3",
@@ -65,7 +67,8 @@
       "finish": "Rose-gold plated",
       "size": "2.4/2.6",
       "care": "Wipe gently after wear"
-    }
+    },
+    "shippingWeightGrams": 220
   },
   {
     "id": "p4",
@@ -87,7 +90,8 @@
       "finish": "Silver-tone",
       "size": "Adjustable",
       "care": "Store away from humidity"
-    }
+    },
+    "shippingWeightGrams": 35
   },
   {
     "id": "p5",
@@ -108,7 +112,8 @@
       "finish": "Satin",
       "size": "Adjustable",
       "care": "Avoid water"
-    }
+    },
+    "shippingWeightGrams": 70
   },
   {
     "id": "p6",
@@ -130,7 +135,8 @@
       "finish": "Rhodium-look",
       "size": "36–42 cm",
       "care": "Store in pouch"
-    }
+    },
+    "shippingWeightGrams": 240
   },
   {
     "id": "p7",
@@ -151,7 +157,8 @@
       "finish": "Polished",
       "size": "1.4 cm",
       "care": "Avoid cosmetics"
-    }
+    },
+    "shippingWeightGrams": 45
   },
   {
     "id": "p8",
@@ -172,7 +179,8 @@
       "finish": "Gold plated",
       "size": "Open adjustable",
       "care": "Keep dry"
-    }
+    },
+    "shippingWeightGrams": 110
   },
   {
     "id": "p9",
@@ -193,7 +201,8 @@
       "finish": "Polished",
       "size": "Adjustable",
       "care": "Keep dry"
-    }
+    },
+    "shippingWeightGrams": 40
   },
   {
     "id": "p10",
@@ -214,6 +223,7 @@
       "finish": "Satin",
       "size": "42–48 cm",
       "care": "Avoid water"
-    }
+    },
+    "shippingWeightGrams": 160
   }
 ]
