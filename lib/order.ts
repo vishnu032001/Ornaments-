@@ -37,10 +37,7 @@ export async function findOrCreateOrder(input: {
       total: pricing.total,
       items: {
         create: pricing.lineItems.map(({ product, quantity }) => ({
-          productId: product.id,
-          name: product.name,
-          unitPrice: product.price,
-          quantity,
+          productId: product.id, name: product.name, unitPrice: product.price, quantity,
         })),
       },
     },
