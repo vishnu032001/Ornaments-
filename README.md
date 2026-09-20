@@ -131,6 +131,20 @@ Configure a Stripe webhook endpoint at `/api/webhooks/stripe` and subscribe to `
 
 The payment webhook is authoritative: the success redirect only clears the local browser cart and displays a confirmation screen; it does not mark an order paid.
 
+## Dynamic shipping and tax
+
+Checkout totals are calculated server-side from the destination address and the server catalog. Shipping uses product-level shipping weights, cart-value free-shipping thresholds, and PIN-code delivery zones. GST is configurable through `GST_RATE_BPS` and the calculator records a destination jurisdiction plus an intra-state Karnataka CGST/SGST or inter-state IGST breakdown.
+
+The quote endpoint is `POST /api/checkout/quote`. The final `POST /api/checkout` repeats the calculation server-side before creating Stripe Checkout line items, so frontend totals are never trusted.
+
+Current defaults are intentionally configurable for launch testing:
+- Free shipping at ₹2,499+
+- Base shipping ₹99
+- ₹60/kg weight component
+- GST 3% (`GST_RATE_BPS=300`)
+
+**Tax compliance note:** the default GST rate is a configurable application rule, not a legal determination. Before production, verify the applicable HSN/GST treatment for each product and replace the matrix/configuration or connect a tax engine such as Stripe Tax/Avalara.
+
 ## Verification
 
 ~~~bash
@@ -155,7 +169,8 @@ Before accepting real payments/orders:
 - Configure Stripe Checkout and the signed webhook endpoint.
 - Run the second Prisma migration with npm run db:deploy.
 - Add inventory reservation/decrement in a database transaction.
-- Add shipping/tax calculation based on the actual destination and applicable rules.
+- Verify the GST/HSN treatment with your tax advisor and configure the production tax matrix or tax engine.
+- Configure production shipping zones/rates and carrier integration if required.
 - Add CSRF protection if introducing cookie-authenticated state-changing browser endpoints outside same-origin flows.
 - Add email verification and account-change notifications.
 - Add account deletion/export flows and privacy/legal pages.
