@@ -15,7 +15,10 @@ Premium responsive artificial-jewellery storefront built with Next.js App Router
 - Database-backed authentication rate limiting
 - PostgreSQL + Prisma ORM schema and initial migration
 - Server-authoritative product prices and order totals
-- No payment-card data is accepted by the demo checkout
+- Stripe-hosted production checkout with server-side pricing
+- Signed Stripe webhook verification with idempotent event processing
+- Payment/order state transitions stored in PostgreSQL
+- Automated order-confirmation emails through Resend
 
 ## Run locally
 
@@ -94,7 +97,39 @@ all existing sessions revoked
 
 ### Guest checkout
 
-Guest checkout remains available at /checkout. The browser sends product IDs and quantities to /api/orders; the server re-reads prices from data/products.json and calculates totals. Authenticated users have their order attached to their account; guests are stored with their email. The claim endpoint is POST /api/orders/claim and links guest orders for the authenticated account with the same email.
+Guest checkout remains available at /checkout. The browser sends product IDs and quantities to /api/checkout; the server re-reads prices from data/products.json and calculates totals before creating a Stripe Checkout Session. A UUID checkoutRequestId makes client retries idempotent. The order is persisted as PENDING before payment, then the Stripe webhook is the source of truth that transitions it to PAID. Authenticated users have their order attached to their account; guests are stored with their email. The claim endpoint is POST /api/orders/claim and links guest orders for the authenticated account with the same email.
+
+## Payments and order processing
+
+Stripe Checkout is used as the payment surface. The application never accepts or stores card details. INR amounts are sent to Stripe in the currency's required minor-unit representation.
+
+~~~text
+Checkout
+  ↓
+/api/checkout
+  ↓
+server re-prices products + shipping + tax
+  ↓
+PENDING Order + idempotent checkoutRequestId
+  ↓
+Stripe Checkout
+  ↓
+POST /api/webhooks/stripe
+  ↓
+signature verification
+  ↓
+idempotent webhook event record
+  ↓
+Order PENDING → PAID
+  ↓
+Resend order-confirmation email
+  ↓
+/checkout/success clears the browser cart
+~~~
+
+Configure a Stripe webhook endpoint at `/api/webhooks/stripe` and subscribe to `checkout.session.completed`, `checkout.session.async_payment_succeeded`, and `checkout.session.async_payment_failed`. Stripe's webhook signature must be verified against the raw request body.
+
+The payment webhook is authoritative: the success redirect only clears the local browser cart and displays a confirmation screen; it does not mark an order paid.
 
 ## Verification
 
@@ -116,8 +151,9 @@ Before accepting real payments/orders:
 
 - Provision managed PostgreSQL and configure pooled/direct connection URLs as appropriate.
 - Run npm run db:deploy against production.
-- Configure Resend (or another transactional provider) with a verified sending domain.
-- Add payment provider checkout + signed webhooks and make payment/order transitions idempotent.
+- Configure Resend with a verified sending domain.
+- Configure Stripe Checkout and the signed webhook endpoint.
+- Run the second Prisma migration with npm run db:deploy.
 - Add inventory reservation/decrement in a database transaction.
 - Add shipping/tax calculation based on the actual destination and applicable rules.
 - Add CSRF protection if introducing cookie-authenticated state-changing browser endpoints outside same-origin flows.
