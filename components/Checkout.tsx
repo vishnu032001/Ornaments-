@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useStore } from "@/lib/store";
 import { formatINR } from "@/lib/utils";
+import { trackBeginCheckout } from "@/lib/analytics";
 
 type Quote = { subtotal:number; shipping:number; tax:number; total:number; shippingZone:string; taxRateBps:number };
 
@@ -54,6 +55,7 @@ export default function Checkout() {
   async function startPayment(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!quote) { setError("Enter a complete delivery address to calculate shipping and GST."); return; }
+    trackBeginCheckout(items.map(({product,quantity}) => ({item_id:product.id,item_name:product.name,price:product.price,quantity,item_category:product.category})), quote.total);
     setLoading(true); setError("");
     try {
       const response = await fetch("/api/checkout", {
