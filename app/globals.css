@@ -1,4 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#fffdf9;color:#272322;font-family:Inter,Arial,sans-serif}button,input,select{font:inherit}::selection{background:#e7b7b2;color:#272322}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#fffdf9;color:#272322;font-family:Inter,Arial,sans-serif}
+button,input,select{font:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #145A4A;outline-offset:3px}
+::selection{background:#e7b7b2;color:#272322}
