@@ -7,7 +7,7 @@ import Analytics from "@/components/Analytics";
 import AnalyticsConsentBanner from "@/components/AnalyticsConsentBanner";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://aurelia-ornaments.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://aurelia-ornaments.vercel.app"),
   title: { default: "Aurelia Ornaments | Modern Fancy Jewellery", template: "%s | Aurelia Ornaments" },
   description: "Elegant artificial jewellery for weddings, celebrations and everyday style.",
   openGraph: { title: "Aurelia Ornaments", description: "Elegant artificial jewellery for weddings, celebrations and everyday style.", type: "website" },
