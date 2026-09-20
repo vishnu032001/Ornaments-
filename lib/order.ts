@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { shippingFor, taxFor } from "@/lib/utils";
+import { calculateCheckoutPricing, type ShippingAddress } from "@/lib/checkout-pricing";
 import products from "@/data/products";
 
 export type RequestedItem = { productId: string; quantity: number };
@@ -16,28 +16,24 @@ function isRetryableTransactionError(error: unknown) {
     && ((error as { code?: string }).code === "P2034" || (error as { code?: string }).code === "P2002");
 }
 
-export function priceOrder(items: RequestedItem[]) {
-  const lineItems = items.map((item) => {
-    const product = products.find((candidate) => candidate.id === item.productId);
-    if (!product) throw new Error("Invalid product.");
-    return { product, quantity: item.quantity };
-  });
-  const subtotal = lineItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const shipping = shippingFor(subtotal);
-  const tax = taxFor(subtotal);
-  return { lineItems, subtotal, shipping, tax, total: subtotal + shipping + tax };
-}
-
 function uniqueItems(items: RequestedItem[]) {
   const quantities = new Map<string, number>();
   for (const item of items) quantities.set(item.productId, (quantities.get(item.productId) ?? 0) + item.quantity);
   return [...quantities.entries()].map(([productId, quantity]) => ({ productId, quantity }));
 }
 
+export function priceOrder(items: RequestedItem[], address: ShippingAddress) {
+  return calculateCheckoutPricing(uniqueItems(items), address);
+}
+
 export async function findOrCreateOrder(input: {
-  checkoutRequestId: string; email: string; userId?: string | null; items: RequestedItem[];
+  checkoutRequestId: string;
+  email: string;
+  userId?: string | null;
+  items: RequestedItem[];
+  shippingAddress: ShippingAddress;
 }) {
-  const pricing = priceOrder(uniqueItems(input.items));
+  const pricing = priceOrder(input.items, input.shippingAddress);
 
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const existing = await prisma.order.findUnique({
