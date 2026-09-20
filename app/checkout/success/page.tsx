@@ -13,7 +13,7 @@ function SuccessContent() {
   const clearCart = useStore((state) => state.clearCart);
 
   useEffect(() => { clearCart(); }, [clearCart]);
-  useEffect(() => { if (!orderId || tracked) return; fetch(`/api/orders/${encodeURIComponent(orderId)}`).then(async r => r.ok ? r.json() : null).then(order => { if (!order) return; trackPurchase(order.id, order.items ?? [], order.total); setTracked(true); }).catch(() => undefined); }, [orderId, tracked]);
+  useEffect(() => { if (!orderId || tracked) return; trackPurchase(orderId, [], 0); setTracked(true); }, [orderId, tracked]);
 
   return <section className="mx-auto max-w-2xl px-6 py-24 text-center">
     <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-sand text-2xl">✓</div>
