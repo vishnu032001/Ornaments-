@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { stripe } from "@/lib/stripe";
 import { getCurrentUser, normalizeEmail } from "@/lib/auth";
-import { findOrCreateOrder } from "@/lib/order";
+import { findOrCreateOrder, InventoryUnavailableError } from "@/lib/order";
 import { prisma } from "@/lib/prisma";
 
 const schema = z.object({
@@ -56,6 +56,12 @@ export async function POST(request: Request) {
     await prisma.order.update({ where: { id: result.order.id }, data: { stripeCheckoutSessionId: session.id } });
     return NextResponse.json({ orderId: result.order.id, url: session.url });
   } catch (error) {
+    if (error instanceof InventoryUnavailableError) {
+      return NextResponse.json(
+        { error: "One or more items are no longer available in the requested quantity.", productId: error.productId },
+        { status: 409 },
+      );
+    }
     console.error("create-checkout-session", error);
     return NextResponse.json({ error: "Unable to start payment." }, { status: 500 });
   }
