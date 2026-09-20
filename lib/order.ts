@@ -17,10 +17,7 @@ export function priceOrder(items: RequestedItem[]) {
 }
 
 export async function findOrCreateOrder(input: {
-  checkoutRequestId: string;
-  email: string;
-  userId?: string | null;
-  items: RequestedItem[];
+  checkoutRequestId: string; email: string; userId?: string | null; items: RequestedItem[];
 }) {
   const existing = await prisma.order.findUnique({
     where: { checkoutRequestId: input.checkoutRequestId },
@@ -35,11 +32,9 @@ export async function findOrCreateOrder(input: {
       userId: input.userId ?? null,
       guestEmail: input.userId ? null : input.email,
       total: pricing.total,
-      items: {
-        create: pricing.lineItems.map(({ product, quantity }) => ({
-          productId: product.id, name: product.name, unitPrice: product.price, quantity,
-        })),
-      },
+      items: { create: pricing.lineItems.map(({ product, quantity }) => ({
+        productId: product.id, name: product.name, unitPrice: product.price, quantity,
+      })) },
     },
     select: { id: true, total: true, status: true, paymentStatus: true, stripeCheckoutSessionId: true },
   });
