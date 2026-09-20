@@ -6,6 +6,7 @@ import {ShoppingBag,Star} from "lucide-react";
 import type {Product} from "@/types/product";
 import {formatINR} from "@/lib/utils";
 import {useStore} from "@/lib/store";
+import {trackAddToCart} from "@/lib/analytics";
 
 export default function ProductCard({product}:{product:Product}){
   const add=useStore(s=>s.addItem);
@@ -17,7 +18,7 @@ export default function ProductCard({product}:{product:Product}){
     </Link>
     <div className="flex items-start justify-between gap-3 pt-4">
       <div><Link href={"/product/"+product.slug} className="font-medium">{product.name}</Link><div className="mt-1 flex items-center gap-1 text-xs text-stone-500"><Star className="h-3 w-3 fill-current"/>{product.rating}</div><p className="mt-2 font-medium">{formatINR(product.price)}</p></div>
-      <button onClick={()=>add(product)} className="rounded-full border border-stone-300 p-3 hover:bg-charcoal hover:text-white" aria-label={"Add "+product.name+" to cart"}><ShoppingBag className="h-4 w-4"/></button>
+      <button onClick={()=>{add(product); trackAddToCart({item_id:product.id,item_name:product.name,price:product.price,quantity:1,item_category:product.category});}} className="rounded-full border border-stone-300 p-3 hover:bg-charcoal hover:text-white" aria-label={"Add "+product.name+" to cart"}><ShoppingBag className="h-4 w-4"/></button>
     </div>
   </article>
 }
